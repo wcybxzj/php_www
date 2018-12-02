@@ -1,0 +1,4 @@
+double fahrenheit_to_celsius (double f)
+double celsius_to_fahrenheit (double c)
+string temperature_converter (double t, long mode)
+array multiple_fahrenheit_to_celsius(array temperatures)

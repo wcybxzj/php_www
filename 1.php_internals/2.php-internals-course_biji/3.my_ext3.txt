@@ -1,0 +1,22 @@
+创建第三个使用配置文件生成的php扩展
+
+cd /root/www/php-7.1.17/ext/
+./ext_skel --extname=pib --proto=/home/wwwroot/default/php_www/4.php-internals/3.pib_proto --no-help
+
+cd /root/www/php-7.1.17/ext/pib
+修改 config.m4 ，去掉 PHP_ARG_ENABLE 和 --enable-pib 这两行前面的 dnl,dnl 是注释符号。
+修改后如下
+PHP_ARG_ENABLE(pib, whether to enable pib support,
+dnl Make sure that the comment is aligned:
+[  --enable-pib           Enable pib support])
+
+写php扩展(看markdown文件)
+
+
+cd /root/www/php-7.1.17/ext/pib
+/root/www/php-7-1-7-install/bin/phpize
+./configure --with-php-config=/root/www/php-7-1-7-install/bin/php-config
+make
+make install
+
+/root/www/php-7.1.17/sapi/cli/php -d extension='/root/www/php-7.1.17/ext/pib/modules/pib.so' -f /home/wwwroot/default/php_www/4.php_internals/2.php-internals-course_biji/3.test.php

@@ -1,0 +1,28 @@
+创建一个最简单的扩展
+cd /root/soft/php/php-7.1.17
+./configure --prefix=/root/www/php-7-1-7-install --disable-all --enable-cli --enable-debug
+make -j2
+make install
+
+cd /root/www/php-7.1.17/ext/
+./ext_skel --extname=my_ext
+
+cd /root/www/php-7.1.17/ext/my_ext
+修改 config.m4 ，去掉 PHP_ARG_ENABLE 和 --enable-pib 这两行前面的 dnl,dnl 是注释符号。
+修改后如下
+PHP_ARG_ENABLE(pib, whether to enable pib support,
+dnl Make sure that the comment is aligned:
+[  --enable-pib           Enable pib support])
+
+cd /root/www/php-7.1.17/ext/my_ext
+/root/www/php-7-1-7-install/bin/phpize
+./configure --with-php-config=/root/www/php-7-1-7-install/bin/php-config
+make  会在当前目录产生modlues/my_ext.so
+make install  复制到 /root/www/php-7-1-7-install/lib/php/extensions/debug-non-zts-20160303/
+
+/root/www/php-7.1.17/sapi/cli/php -d extension='/root/www/php-7.1.17/ext/my_ext/modules/my_ext.so' -r "echo confirm_my_ext_compiled('hello world');"
+/root/www/php-7-1-7-install/bin/php -d extension='/root/www/php-7.1.17/ext/my_ext/modules/my_ext.so' -r "echo confirm_my_ext_compiled('hello world');"
+
+
+
+
