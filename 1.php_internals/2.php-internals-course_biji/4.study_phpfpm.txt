@@ -1,0 +1,4 @@
+cd /root/soft/php/php-7.1.17
+./configure --prefix=/root/www/php-7-1-7-install --disable-all --enable-fpm  --enable-cli --enable-debug
+make -j2
+make install
