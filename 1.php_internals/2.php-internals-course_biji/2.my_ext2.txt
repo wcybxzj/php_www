@@ -2,7 +2,7 @@
 
 cd /root/www/php-7.1.17/
 make clean
-./configure --prefix=/root/www/php-7-1-7-install --disable-all --enable-cli --enable-debug
+./configure --prefix=/root/www/php-7-1-7-install --disable-all --enable-cli --enable-fpm --enable-debug
 make -j2
 make install
 
