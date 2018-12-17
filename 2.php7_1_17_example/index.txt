@@ -1,0 +1,4 @@
+1.atmoic_cmp_set.c:
+//看php-fpm中fpm_atmoic.h-->fpm_spinlock()
+//发现spinlock用的是gcc内置的原子操作
+==================================================================

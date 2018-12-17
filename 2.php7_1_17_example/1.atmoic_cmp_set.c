@@ -2,8 +2,11 @@
 #include <pthread.h>
 #include <unistd.h>
 
-int sum = 0;
 
+//起因:
+//看php-fpm中fpm_atmoic.h-->fpm_spinlock()
+//发现spinlock用的是gcc内置的原子操作
+int sum = 0;
 
 /*
 https://blog.csdn.net/stpeace/article/details/81150393
