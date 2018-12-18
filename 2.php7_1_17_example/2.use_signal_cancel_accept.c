@@ -64,7 +64,7 @@ int worker(int newsd){
 	len = sprintf(str, FMT_STAMP, (long long)time(NULL));
 
 	printf("=====len:%d======\n", len);
-	printf(FMT_STAMP, str);
+	printf("%s", str);
 
 	ret = send(newsd, str, len, 0);
 
@@ -120,8 +120,9 @@ int main(){
 
 	listen(sd, 200);
 
-	if (0 > dup2(wp->listening_socket, STDIN_FILENO)) {
-		//TODO
+	//关闭STDIO_FILENO,让sd使用STDIO_FILENO的文件描述符号
+	if (0 > dup2(sd, STDIN_FILENO)) {
+		printf("dup2(), error\n");
 	}
 
 	while (1) {
