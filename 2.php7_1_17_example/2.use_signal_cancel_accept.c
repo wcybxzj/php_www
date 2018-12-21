@@ -11,16 +11,27 @@
 #include <signal.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define IP_SIZE 16
 
 #define SERVERPORT "1989"
 #define FMT_STAMP "%lld"
 
-//起因:
-//php-fpm中 fpm_child_init()-->fpm_signals_init_child()
-//worker子进程正在accept(fd)
-//worker子进程通过给信号SIGQUIT设置sig_soft_quit()-->close(fd) 来终止woker工作进程
+
+
+//fpm运行在前台运行:
+//父进程创建listenfd:
+//代码fpm_init()-->fpm_sockets_init_main()
+//
+//worker子进程dup2(listenfd,STDIN_FILENO):
+//代码fpm_run()-->fpm_children_create_initial()-->fpm_children_make()-->fpm_child_init()-->fpm_stdio_init_child()
+//
+//worker子进程正在accept(STDIN_FILENO):
+//
+//worker子进程通过信号SIGQUIT来 出发信号处理方法来close(STDIN_FILENO),目的是让accept()返回-1来结束
+//代码fpm_run()-->fpm_children_create_initial()-->fpm_children_make()-->fpm_child_init()--> fpm_signals_init_child()-->sig_soft_quit()-->close(0)
 
 /*
 测试1:基本功能测试
@@ -48,9 +59,6 @@ nc 127.0.0.1 1989
 
 */
 
-/*
-测试3:
-*/
 int worker(int newsd){
 	char str[IP_SIZE]={'\0'};
 	int len;
@@ -79,19 +87,25 @@ int worker(int newsd){
 	close(newsd);
 }
 
+static void sig_soft_quit(int signo) /* {{{ */
+{
+	close(0);
+}
 
 int main(){
+	printf("client usage: nc 127.0.0.1 1989 \n");
+	printf("pid:%d\n",getpid());
 	int accept_fd = 0;
 	int sd, newsd;
 	struct sockaddr_in laddr, raddr;
 	socklen_t rlen;
 	char ip[IP_SIZE];
 
-	////信号
-	//struct sigaction act;
-	//memset(&act, 0, sizeof(act));
-	//act.sa_handler = &sig_soft_quit;
-	//sigaction(SIGQUIT, $act, 0);
+	//信号
+	struct sigaction act;
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = &sig_soft_quit;
+	sigaction(SIGQUIT, &act, 0);
 
 	sd = socket(AF_INET, SOCK_STREAM, 0/*IPPROTO_TCP*/);
 	if(sd < 0){
@@ -126,12 +140,12 @@ int main(){
 	}
 
 	while (1) {
-		newsd = accept(sd, (void *)&raddr, &rlen);
+		newsd = accept(STDIN_FILENO, (void *)&raddr, &rlen);
 		if(newsd<0){
 			if(errno == EAGAIN ||errno == EINTR){
 				continue;
 			}
-			perror("accept()");
+			perror("accept() err!");
 			exit(-2);
 		}
 
