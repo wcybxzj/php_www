@@ -2,3 +2,6 @@
 //看php-fpm中fpm_atmoic.h-->fpm_spinlock()
 //发现spinlock用的是gcc内置的原子操作
 ==================================================================
+2.use_signal_cancel_accept.c:
+使用信号来终止当前的accept()
+
