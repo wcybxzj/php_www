@@ -5,6 +5,9 @@ make -j2
 
 就可以用eclipse-cdt调试了
 ---------------------------------------------------------
-2.eclipse-cdt调试phpfpm子进程的方式
-.gdbinit 文件开头加一行
+2.eclipse-cdt调试phpfpm
+.gdbinit:
+#gdb追随fork后的子进程
 set follow-fork-mode child
+#gdb不拦截SIGINT,让我可以调试SIGINT设置的信号
+handle SIGINT nostop print pass
