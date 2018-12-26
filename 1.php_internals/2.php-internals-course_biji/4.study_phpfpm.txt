@@ -9,5 +9,10 @@ make -j2
 .gdbinit:
 #gdb追随fork后的子进程
 set follow-fork-mode child
-#gdb不拦截SIGINT,让我可以调试SIGINT设置的信号
-handle SIGINT nostop print pass
+#gdb不拦截SIGXXX,让我可以调试SIGXXX设置的信号
+handle SIGTERM nostop print pass
+handle SIGINT  nostop print pass
+handle SIGUSR1 nostop print pass
+handle SIGUSR2 nostop print pass
+handle SIGCHLD nostop print pass
+handle SIGQUIT nostop print pass
