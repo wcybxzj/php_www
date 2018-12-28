@@ -56,9 +56,19 @@ nc 127.0.0.1 1989
 
 /*
 测试2:
+说明:SININT close(0)后accept直接就挂了后边代码都不执行,返回码是130
+#define EOWNERDEAD  130 // Owner died
 
+终端1:
+./2.use_signal_cancel_accept 
+client usage: nc 127.0.0.1 1989 
+pid:98027
+
+accept() err!: Bad file descriptor
+
+终端2:
+kill -QUIT 98027
 */
-
 int worker(int newsd){
 	char str[IP_SIZE]={'\0'};
 	int len;
@@ -95,7 +105,6 @@ static void sig_soft_quit(int signo) /* {{{ */
 int main(){
 	printf("client usage: nc 127.0.0.1 1989 \n");
 	printf("pid:%d\n",getpid());
-	int accept_fd = 0;
 	int sd, newsd;
 	struct sockaddr_in laddr, raddr;
 	socklen_t rlen;
@@ -147,6 +156,8 @@ int main(){
 			}
 			perror("accept() err!");
 			exit(-2);
+		}else{
+			printf("accept fine!\n");
 		}
 
 		if(inet_ntop(AF_INET, (void *)&raddr.sin_addr, \
