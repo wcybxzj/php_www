@@ -7,8 +7,7 @@ make -j2
 就可以用eclipse-cdt调试了
 -------------------------------------------------------------------------------------
 2.gdb:
-cd /root/www/php-7.1.17/sapi/fpm
-./php-fpm -y /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
+/root/www/php-7.1.17/sapi/fpm/php-fpm -y /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
 ------------------------------------------------------------------------------------
 3.eclipse-cdt调试phpfpm
 .gdbinit:
@@ -21,8 +20,7 @@ handle SIGINT-SIGSYS nostop print pass
 4.对master进程发送SIGQUIT查看master处理方法
 
 终端1:
-cd /root/www/php-7.1.17/sapi/fpm
-./php-fpm -y /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
+/root/www/php-7.1.17/sapi/fpm/php-fpm -y /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
 
 eclipse-cdt:
 attatch 管理进程pid
