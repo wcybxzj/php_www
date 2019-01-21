@@ -5,10 +5,13 @@
 2.use_signal_cancel_accept.c:
 使用信号来终止当前的accept()
 ==================================================================
-3.zend_try分析
+3,epoll_et_lt.c:
+fpm在ondemand进程工作模式下,master process的epoll为什么必须用ET模式 
+==================================================================
+zend_try分析
 https://www.cnblogs.com/yjf512/p/6092708.html
 ==================================================================
-4.fpm_stdio_init_main()
+fpm_stdio_init_main()
 标准输入和输出都执行/dev/null
 https://www.cnblogs.com/lishihai/p/7986565.html
 ==================================================================

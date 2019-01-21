@@ -1,7 +1,7 @@
 $(CC)=gcc
 ARG+=-lpthread -march=nocona -mtune=generic
 
-PROGS = 1.atmoic_cmp_set 2.use_signal_cancel_accept
+PROGS = 1.atmoic_cmp_set 2.use_signal_cancel_accept 3.epoll_et_lt
 
 all:$(PROGS)
 
@@ -10,6 +10,9 @@ all:$(PROGS)
 
 2.use_signal_cancel_accept: 2.use_signal_cancel_accept.o
 	$(CC) -o 2.use_signal_cancel_accept  2.use_signal_cancel_accept.c
+
+3.epoll_et_lt: 3.epoll_et_lt.o
+	$(CC) -o 3.epoll_et_lt 3.epoll_et_lt.c
 
 %.o: %.c
 	$(CC) -c $<
