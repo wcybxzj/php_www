@@ -1,0 +1,194 @@
+zval类型zend/zend_types.h:
+/* regular data types */
+#define IS_UNDEF					0
+#define IS_NULL						1
+#define IS_FALSE					2
+#define IS_TRUE						3
+#define IS_LONG						4
+#define IS_DOUBLE					5
+#define IS_STRING					6
+#define IS_ARRAY					7
+#define IS_OBJECT					8
+#define IS_RESOURCE					9
+#define IS_REFERENCE				10
+=====================================================================================================
+
+gdb /root/www/php-7.1.17/sapi/cli/php
+
+ //设置断点
+(gdb) b ZEND_ECHO_SPEC_CV_HANDLER
+Breakpoint 1 at 0x3ecf1d: file /root/www/php-7.1.17/Zend/zend_vm_execute.h, line 34696.
+
+ //运行php脚本
+(gdb) r 3.2.zval.php
+Starting program: /root/www/php-7.1.17/sapi/cli/php 3.2.zval.php
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+//u1.v.type是4 说明类型是long, zval.value.lval中去取得数值是2
+(gdb) p *z
+$1 = {value = {lval = 2, dval = 9.8813129168249309e-324, counted = 0x2, str = 0x2, arr = 0x2, obj = 0x2, res = 0x2, ref = 0x2, ast = 0x2, zv = 0x2, ptr = 0x2, ce = 0x2, func = 0x2, ww = {w1 = 2, w2 = 0}}, u1 = {v = {type = 4 '\004', type_flags = 0 '\000', const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 4}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}} 
+(gdb) p z
+$2 = (zval *) 0x7ffff7014080 (注意地址)
+(gdb) c
+Continuing.
+2 //echo输出的结果
+
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) p z
+$4 = (zval *) 0x55555594cde1 <ZEND_ASSIGN_SPEC_CV_CONST_RETVAL_UNUSED_HANDLER+86>
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$5 = (zval *) 0x7ffff7014090
+//u1.v.type是5 说明类型是double, zval.value.dval中去取得数值是1.1
+(gdb) p *z
+$6 = {value = {lval = 4607632778762754458, dval = 1.1000000000000001, counted = 0x3ff199999999999a, str = 0x3ff199999999999a, 
+    arr = 0x3ff199999999999a, obj = 0x3ff199999999999a, res = 0x3ff199999999999a, ref = 0x3ff199999999999a, ast = 0x3ff199999999999a, 
+    zv = 0x3ff199999999999a, ptr = 0x3ff199999999999a, ce = 0x3ff199999999999a, func = 0x3ff199999999999a, ww = {w1 = 2576980378, 
+      w2 = 1072798105}}, u1 = {v = {type = 5 '\005', type_flags = 0 '\000', const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 5}, u2 = {
+    next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) c
+Continuing.
+1.1//echo 输出的结果
+
+
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$7 = (zval *) 0x7ffff70140a0
+(gdb)  p *z
+//u1.v.type是1 说明类型是NULL, 无需去去取值
+$8 = {value = {lval = 2, dval = 9.8813129168249309e-324, counted = 0x2, str = 0x2, arr = 0x2, obj = 0x2, res = 0x2, ref = 0x2, ast = 0x2, 
+    zv = 0x2, ptr = 0x2, ce = 0x2, func = 0x2, ww = {w1 = 2, w2 = 0}}, u1 = {v = {type = 1 '\001', type_flags = 0 '\000', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 1}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) c
+Continuing.
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) 
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$9 = (zval *) 0x7ffff70140b0
+(gdb) p *z
+//u1.v.type是3 说明类型是TRUE
+$10 = {value = {lval = 2, dval = 9.8813129168249309e-324, counted = 0x2, str = 0x2, arr = 0x2, obj = 0x2, res = 0x2, ref = 0x2, ast = 0x2, 
+    zv = 0x2, ptr = 0x2, ce = 0x2, func = 0x2, ww = {w1 = 2, w2 = 0}}, u1 = {v = {type = 3 '\003', type_flags = 0 '\000', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 3}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) c
+Continuing.
+1 //echo的输出
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$11 = (zval *) 0x7ffff70140c0
+(gdb) p *z
+//u1.v.type是2 说明类型是FALSE
+$12 = {value = {lval = 2, dval = 9.8813129168249309e-324, counted = 0x2, str = 0x2, arr = 0x2, obj = 0x2, res = 0x2, ref = 0x2, ast = 0x2, 
+    zv = 0x2, ptr = 0x2, ce = 0x2, func = 0x2, ww = {w1 = 2, w2 = 0}}, u1 = {v = {type = 2 '\002', type_flags = 0 '\000', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 2}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) c
+Continuing.
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$13 = (zval *) 0x7ffff70140d0
+(gdb) p *z
+//u1.v.type是6 说明类型是String
+$14 = {value = {lval = 140737337367744, dval = 6.953348348057184e-310, counted = 0x7ffff7001cc0, str = 0x7ffff7001cc0, arr = 0x7ffff7001cc0, 
+    obj = 0x7ffff7001cc0, res = 0x7ffff7001cc0, ref = 0x7ffff7001cc0, ast = 0x7ffff7001cc0, zv = 0x7ffff7001cc0, ptr = 0x7ffff7001cc0, 
+    ce = 0x7ffff7001cc0, func = 0x7ffff7001cc0, ww = {w1 = 4143979712, w2 = 32767}}, u1 = {v = {type = 6 '\006', type_flags = 0 '\000', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 6}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) p $14.value.str
+$15 = (zend_string *) 0x7ffff7001cc0
+(gdb) p *$14.value.str
+$16 = {gc = {refcount = 0, u = {v = {type = 6 '\006', flags = 2 '\002', gc_info = 0}, type_info = 518}}, h = 9223601526945540646, len = 7, 
+  val = "y"}
+(gdb) p *$14.value.str.val
+$17 = 121 'y'
+(gdb) p *$14.value.str.val@7
+$18 = "ybxisme"
+(gdb) c
+Continuing.
+ybxisme //echo的输出
+
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$19 = (zval *) 0x7ffff70140e0
+(gdb) p *z
+$20 = {value = {lval = 140737337721792, dval = 6.9533483655494794e-310, counted = 0x7ffff70583c0, str = 0x7ffff70583c0, arr = 0x7ffff70583c0, 
+    obj = 0x7ffff70583c0, res = 0x7ffff70583c0, ref = 0x7ffff70583c0, ast = 0x7ffff70583c0, zv = 0x7ffff70583c0, ptr = 0x7ffff70583c0, 
+    ce = 0x7ffff70583c0, func = 0x7ffff70583c0, ww = {w1 = 4144333760, w2 = 32767}}, u1 = {v = {type = 7 '\a', type_flags = 28 '\034', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 7175}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) p $20.value.arr
+$21 = (zend_array *) 0x7ffff70583c0
+(gdb) p *$20.value.arr
+//u1.v.type是7 说明类型是Obj
+$22 = {gc = {refcount = 2, u = {v = {type = 7 '\a', flags = 0 '\000', gc_info = 0}, type_info = 7}}, u = {v = {flags = 30 '\036', 
+      nApplyCount = 0 '\000', nIteratorsCount = 0 '\000', consistency = 0 '\000'}, flags = 30}, nTableMask = 4294967294, 
+  arData = 0x7ffff705ea08, nNumUsed = 3, nNumOfElements = 3, nTableSize = 8, nInternalPointer = 0, nNextFreeElement = 3, 
+  pDestructor = 0x555555892a02 <_zval_ptr_dtor_wrapper>}
+(gdb) c
+Continuing.
+Array
+Breakpoint 1, ZEND_ECHO_SPEC_CV_HANDLER () at /root/www/php-7.1.17/Zend/zend_vm_execute.h:34696
+34696		SAVE_OPLINE();
+(gdb) n
+34697		z = _get_zval_ptr_cv_undef(execute_data, opline->op1.var);
+(gdb) n
+34699		if (Z_TYPE_P(z) == IS_STRING) {
+(gdb) p z
+$23 = (zval *) 0x7ffff70140f0
+(gdb) p *z
+$24 = {value = {lval = 140737337372496, dval = 6.953348348291964e-310, counted = 0x7ffff7002f50, str = 0x7ffff7002f50, arr = 0x7ffff7002f50, 
+    obj = 0x7ffff7002f50, res = 0x7ffff7002f50, ref = 0x7ffff7002f50, ast = 0x7ffff7002f50, zv = 0x7ffff7002f50, ptr = 0x7ffff7002f50, 
+    ce = 0x7ffff7002f50, func = 0x7ffff7002f50, ww = {w1 = 4143984464, w2 = 32767}}, u1 = {v = {type = 8 '\b', type_flags = 12 '\f', 
+      const_flags = 0 '\000', reserved = 0 '\000'}, type_info = 3080}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, 
+    fe_iter_idx = 0, access_flags = 0, property_guard = 0, extra = 0}}
+(gdb) p $24.value.obj 
+$25 = (zend_object *) 0x7ffff7002f50
+(gdb) p *$24.value.obj 
+$26 = {gc = {refcount = 1, u = {v = {type = 8 '\b', flags = 0 '\000', gc_info = 0}, type_info = 8}}, handle = 1, ce = 0x555555e19ae0, 
+  handlers = 0x555555db5ac0 <std_object_handlers>, properties = 0x0, properties_table = {{value = {lval = 140737337389160, 
+        dval = 6.953348349115275e-310, counted = 0x7ffff7007068, str = 0x7ffff7007068, arr = 0x7ffff7007068, obj = 0x7ffff7007068, 
+        res = 0x7ffff7007068, ref = 0x7ffff7007068, ast = 0x7ffff7007068, zv = 0x7ffff7007068, ptr = 0x7ffff7007068, ce = 0x7ffff7007068, 
+        func = 0x7ffff7007068, ww = {w1 = 4144001128, w2 = 32767}}, u1 = {v = {type = 40 '(', type_flags = 0 '\000', const_flags = 0 '\000', 
+          reserved = 0 '\000'}, type_info = 40}, u2 = {next = 0, cache_slot = 0, lineno = 0, num_args = 0, fe_pos = 0, fe_iter_idx = 0, 
+        access_flags = 0, property_guard = 0, extra = 0}}}}
+
