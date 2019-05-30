@@ -1,0 +1,114 @@
+前提:
+代码目录:
+/root/www/php-7.1.17
+
+php安装目录:
+/root/www/php-7-1-7-install
+===========================================================================
+写一个最简单的插件
+cd /root/www/php-7.1.17/ext
+./ext_skel --extname=helloworld
+cd helloworld
+
+修改config.mp4
+PHP_ARG_WITH(helloworld, for helloworld support,
+Make sure that the comment is aligned:
+[  --with-helloworld             Include helloworld support])
+
+使用phpize来为扩展生成configure文件
+/root/www/php-7-1-7-install/bin/phpize
+
+./configure  --with-php-config=/root/www/php-7-1-7-install/bin/php-config
+
+make
+
+ll /root/www/php-7.1.17/ext/helloworld/modules
+-rw-r--r-- 1 root root   821 5月  30 23:47 helloworld.la
+-rwxr-xr-x 1 root root 48616 5月  30 23:47 helloworld.so*
+
+/root/www/php-7.1.17/ext/helloworld# make install
+Installing shared extensions:     /root/www/php-7-1-7-install/lib/php/extensions/debug-non-zts-20160303/
+
+=======================================================================================================
+解决问题1:php.ini没有加载的问题
+1.看到确实没加载
+strace root/www/php-7-1-7-install/bin/php --ini 2> 1.txt
+Configuration File (php.ini) Path: /root/www/php-7-1-7-install/lib
+Loaded Configuration File:         (none) (这里没有加载!!!!!!!!!!)
+Scan for additional .ini files in: (none)
+Additional .ini files parsed:      (none)
+
+strace /root/www/php-7.1.17/sapi/cli/php --ini 2> 2.txt
+Configuration File (php.ini) Path: /root/www/php-7-1-7-install/lib
+Loaded Configuration File:         (none) (这里没有加载!!!!!!!!!!)
+Scan for additional .ini files in: (none)
+Additional .ini files parsed:      (none)
+
+2.修改php.ini让dl可以使用
+vim /usr/local/php/etc/php.ini
+修改1:
+disable_functions=中删除dl
+修改2:
+enable_dl = On
+
+3.找到需要复制到的位置
+cat 1.txt
+openat(AT_FDCWD, "/root/www/php-7-1-7-install/bin/php.ini", O_RDONLY) =-1
+
+cat 2.txt
+openat(AT_FDCWD, "/root/www/php-7.1.17/sapi/cli/php.ini", O_RDONLY) = -1 ENOENT (No such file or directory)
+
+cp /usr/local/php/etc/php.ini /root/www/php-7-1-7-install/bin/php.ini
+cp /usr/local/php/etc/php.ini /root/www/php-7.1.17/sapi/cli/php.ini
+
+5.看到php.ini加载进来了
+root@ybx-virtual-machine:~/www/php-7-1-7-install/bin# strace ./php --ini 2> 1.txt
+Configuration File (php.ini) Path: /root/www/php-7-1-7-install/lib
+Loaded Configuration File:         /root/www/php-7-1-7-install/bin/php.ini
+
+root@ybx-virtual-machine:/usr/local/php# strace /root/www/php-7.1.17/sapi/cli/php --ini 2> 2.txt
+Configuration File (php.ini) Path: /root/www/php-7-1-7-install/lib
+Loaded Configuration File:         /root/www/php-7.1.17/sapi/cli/php.ini
+
+6.可以看到现在是都是用dl加载的扩展
+/root/www/php-7.1.17/sapi/cli/php /root/www/php-7.1.17/ext/helloworld/helloworld.php
+使用dl加载 hellworld.soFunctions available in the test extension:
+confirm_helloworld_compiled
+Congratulations! You have successfully modified ext/helloworld/config.m4. Module helloworld is now compiled into PHP.
+
+/root/www/php-7-1-7-install/bin/php /root/www/php-7.1.17/ext/helloworld/helloworld.php
+使用dl加载 hellworld.soFunctions available in the test extension:
+confirm_helloworld_compiled
+Congratulations! You have successfully modified ext/helloworld/config.m4. Module helloworld is now compiled into PHP.
+
+7.把扩展写到php.ini
+vim /root/www/php-7-1-7-install/bin/php.ini
+extension=/root/www/php-7-1-7-install/lib/php/extensions/debug-non-zts-20160303/helloworld.so
+cp /root/www/php-7-1-7-install/bin/php.ini /root/www/php-7.1.17/sapi/cli/php.ini
+
+root@ybx-virtual-machine:/usr/local/php# /root/www/php-7.1.17/sapi/cli/php /root/www/php-7.1.17/ext/helloworld/helloworld.php
+Functions available in the test extension:
+confirm_helloworld_compiled
+Congratulations! You have successfully modified ext/helloworld/config.m4. Module helloworld is now compiled into PHP.
+
+root@ybx-virtual-machine:/usr/local/php# /root/www/php-7-1-7-install/bin/php /root/www/php-7.1.17/ext/helloworld/helloworld.php
+Functions available in the test extension:
+confirm_helloworld_compiled
+Congratulations! You have successfully modified ext/helloworld/config.m4. Module helloworld is now compiled into PHP.
+
+8.让php-fpm可以支持helloword扩展
+看下源码中的php-fpm缺少php.ini
+strace ./php-fpm  /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
+openat(AT_FDCWD, "/root/www/php-7-1-7-install/lib/php.ini", O_RDONLY) = -1 ENOENT (No such file or directory)
+
+解决:
+cp /root/www/php-7-1-7-install/bin/php.ini /root/www/php-7-1-7-install/lib/php.ini
+
+再次查看
+strace ./php-fpm  /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
+openat(AT_FDCWD, "/root/www/php-7-1-7-install/lib/php.ini", O_RDONLY) = 3
+openat(AT_FDCWD, "/root/www/php-7-1-7-install/lib/php/extensions/debug-non-zts-20160303/helloworld.so", O_RDONLY|O_CLOEXEC) = 3
+
+lnmp php-fpm stop
+
+eclipse启动php-fpm
