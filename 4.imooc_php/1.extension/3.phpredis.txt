@@ -4,9 +4,6 @@
 前提:
 代码目录:
 /root/www/php-7.1.17
-
-php安装目录:
-/root/www/php-7-1-7-install
 ===========================================================================
 cd /root/soft
 wget https://github.com/phpredis/phpredis/archive/4.0.2.tar.gz
@@ -15,13 +12,6 @@ cd phpredis-4.0.2/
 /usr/local/php/bin/phpize
 ./configure --with-php-config=/usr/local/php/bin/php-config
 make && make install
-
-
-===========================================================================
-vim /root/www/php-7-1-7-install/lib/php.ini
-extension=/root/www/php-7-1-7-install/lib/php/extensions/debug-non-zts-20160303/redis.so
-===========================================================================
-./php-fpm -y /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
 ===========================================================================
 eclispe gdb 远程attach 打上断点
 /root/www/php-7.1.17/phpredis-4.0.2

@@ -1,0 +1,18 @@
+开发一个日志插件
+cd /root/www/php-7.1.17/ext
+./ext_skel --extname=iMoocLog
+
+cd iMoocLog/
+
+vim config.mp4
+PHP_ARG_WITH(iMoocLog, for iMoocLog support,
+Make sure that the comment is aligned:
+[  --with-iMoocLog             Include iMoocLog support])
+
+vim iMoocLog.c
+
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make && make install
+
+vim /usr/local/php/etc/php.ini
