@@ -1,3 +1,6 @@
+写一个最简单的插件helloworld 
+
+===========================================================================
 前提:
 代码目录:
 /root/www/php-7.1.17
@@ -5,7 +8,6 @@
 php安装目录:
 /root/www/php-7-1-7-install
 ===========================================================================
-写一个最简单的插件
 cd /root/www/php-7.1.17/ext
 ./ext_skel --extname=helloworld
 cd helloworld
@@ -102,7 +104,7 @@ strace ./php-fpm  /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
 openat(AT_FDCWD, "/root/www/php-7-1-7-install/lib/php.ini", O_RDONLY) = -1 ENOENT (No such file or directory)
 
 解决:
-cp /root/www/php-7-1-7-install/bin/php.ini /root/www/php-7-1-7-install/lib/php.ini
+cp /usr/local/php/etc/php.ini /root/www/php-7-1-7-install/lib/php.ini
 
 再次查看
 strace ./php-fpm  /root/www/php_www/2.php7_1_17_example/0.fpm_debug.conf
